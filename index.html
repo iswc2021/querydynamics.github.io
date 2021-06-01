@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Estimating the dynamics of SPARQL query results using binary classification</title>
+        <meta name="description" content="Complementary material of paper Estimating the dynamics of SPARQL query results using binary classification.">
+        <link rel="stylesheet" href="main.css">
+    </head>
+    <body>
+        
+        <h1>Estimating the dynamics of SPARQL query results using binary classification</h1>
+        
+        <h3><font color="red">Website Under Maintenance</font></h3>
+        <p>
+            Hi, our website is currently under maintenance. Some links are broken. <br>
+            Come back very soon or contact the <a href="mailto:amoya@dcc.uchile.cl" target="_top">authors</a>.<br>
+            <b>Sorry for the inconvenience!</b>
+        </p>
+        
+        <!--
+            MADE WITH <3 AND JAVASCRIPT
+        -->
+        
+        <p>
+            This page contains complementary material, such as, code, data and queries described in the paper <b>Estimating the dynamics of SPARQL query results using binary classification</b> (by <a href="http://users.dcc.uchile.cl/~amoya"> Alberto Moya Loustaunau</a> and <a href="http://aidanhogan.com/">Aidan Hogan</a>). This material can be useful to repeat the experiments with different settings in order to produce comparable results. If you have a question or sugestion about the experiments, please write to <a href="mailto:amoya@dcc.uchile.cl" target="_top">Alberto Moya Loustaunau</a>.
+        </p>
+        
+        <!--
+            WHAT IS BRACKETS?
+        -->
+        <p>
+            The paper addresses the problem of predicting changes in a query's results after changes in an RDF graph. The paper proposes a framework based on Machine Learning. The idea is to extract static features from a query, as well as dynamic features from the query and an RDF graph. These features will be the inputs for binary classifiers that predict whether or not the query results will change at a fixed point in the future.
+        </p>
+        
+        <p>
+            You can download the <a href="assets/main.pdf">article</a>, the <a href="#Data">data</a> and the <a href="#Queries">queries</a>. The original data was taken from the <a href="https://dumps.wikimedia.org/wikidatawiki/entities/">RDF dump</a> from 2017-04-18 to 2017-09-27.
+        </p> 
+        
+        <p>
+            All source code used is published in a <a href="#home">dedicated git repository</a>.
+        </p> 
+        
+        
+        <!--
+            GET STARTED WITH YOUR OWN FILES
+        -->
+        
+        <h3>Predicting the Dynamics of Query Results</h3>
+        <h4>Architecture</h4>
+        
+        <a href="image/schema.png">
+            <img alt="Proposed architecture for predicting change in query results" src="image/schema.png" width="512" />
+            
+        </a>
+        
+        <p>
+            Here, we provide an overview of a general architecture for making predictions with respect to the OSC prediction task. A SPARQL query Q and a dynamic RDF graph G are given as input. The <strong>Query Feature Extractor</strong> extracts static features from the query, which include statistics about the number of elements in the query (e.g., number of triple patterns, variables, etc.) as well as the presence of particular query operators (e.g., <kbd>UNION</kbd>, <kbd>FILTER</kbd>, recursive path expressions, etc.). The <strong>Predicate Feature Extractor</strong> takes as input the predicates from the query and statistics about those predicates from the dynamic graph to produce a set of aggregated numerical features about the dynamicity of predicates used in the query. The <strong>Result Feature Extractor</strong> takes as input the results of the query over past versions of the dynamic graph from which it produces further features. All such features are passed to a (pre-trained) binary classifier to generate the final One Shot Change (OSC) prediction. We will now describe in more detail the query, data and result features considered in this work.
+        </p>
+        
+        <h4>Query Features</h4>
+        
+        <p>
+            Our initial set of features is based on static analysis of the input SPARQL query.
+        </p> 
+        
+        <a href="image/query.png">
+            <img alt="Proposed architecture for predicting change in query results" src="image/query.png" width="512" />            
+        </a>
+        
+        <p>
+            Figure shows only a sample of evaluated features, as well as -- for the purposes of illustration -- their values for an example query. Below you can find a complete list of features and their values. 
+        </p>
+        
+         <ul>
+            <li><a href="#Queries">Queries</a></li>
+            <li><a href="#Features">Features</a></li>
+            <li><a href="#Predicates">Predicates</a></li>
+        </ul> 
+        
+        <h4>Predicate Features</h4>
+        
+        <p>
+            The next component extracts features that capture information about the dynamics of predicates used in the query (without <i>evaluating</i> the query on the dynamic graph). This component captures how often and how many triples change for a predicate in a time interval, with the idea that predicates capture rich information about the dynamics of a dataset, where the results of queries with dynamic predicates will be more sensitive to change.
+        </p>
+        
+        
+        <p>
+            For that, we compute the set of changing triples for every pair of consecutive version, denotes the triples in one graph or the other but not both. Next, for each difference sets, we compute the multiplicity for each predicate, let say the number of triples. 
+        </p>
+        
+         <ul>
+            <li><a href="#Data">RDF Graphs</a></li>
+            <li><a href="#home">Difference Sets</a></li>
+            <li><a href="#home">Predicate Multiplicity</a></li>
+            <li><a href="#home">Predicate Normalized Multiplicity</a></li>
+        </ul> 
+        <h4>Result Features</h4>
+        
+        <p>
+            The third type of feature we capture indicates how many times the query results Q have changed over the past versions of the dynamic graph. While this feature offers rich information for prediction, given a query that has not previously been seen, it is costly to compute, since it requires the evaluation of the query over each past version within an interval, which in turn requires maintaining indexes over the full data for a variety of past versions.
+        </p>
+        
+         <p>
+            For that, we used Virtuoso to build indexes to query using SPARQL service. Below you can see the results and result features. 
+        </p>
+        
+         <ul>
+            <li><a href="#home">Query Results</a></li>
+            <li><a href="#home">Consecutive Changes</a></li>
+            <li><a href="#home">Ammount of Consecutive Changes</a></li>
+            <li><a href="#home">Normalized Ammount of Consecutive Changes</a></li>
+        </ul> 
+        
+        <!--
+            THE RELATIONSHIP BETWEEN HTML, CSS AND JAVASCRIPT
+        -->
+        <h3>Evaluation</h3>
+        <p>
+            To build our final datasets, we must define a past interval to consider. With 23 versions, we must hold out at least one version to predict, leaving a maximum interval of 22 past versions to use for computing our features. However, the more past versions we consider for a prediction, the fewer examples we can generate; for example, if we consider 22 versions, we will only have one ground truth label for each query. In the end, we opted to consider intervals of 3, 5, 9 and 17 previous versions, for example, in the case of an interval of three versions, we use (G<sub>i-3</sub>, G<sub>i-2</sub>, <sub>i-1</sub>) to predict changes in queries results for the subsequent version (G<sub>i</sub>), which allows us to predict OSC from G<sub>4</sub> to G<sub>23</sub> inclusive, providing 20 labeled examples per query. We thus have 4,420 labeled examples for intervals of 3, ranging down to 1,326 examples for intervals of 17. No feature explicitly indicates the versions given or the version to be predicted.
+        </p>
+        <ul>
+            <li><a href="#home">OSC-3</a></li>
+            <li><a href="#home">OSC-5</a></li>
+            <li><a href="#home">OSC-9</a></li>
+            <li><a href="#home">OSC-7</a></li>
+        </ul> 
+        
+    </body>
+</html>
