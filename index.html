@@ -1,25 +1,83 @@
-<!DOCTYPE html>
-<html>
-    
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Predicting SPARQL Query Dynamics</title>
-        <meta name="description" content="Complementary material of paper Predicting SPARQL Query Dynamics">
-        <link rel="stylesheet" href="main.css">
-    </head>
-    <body>
-        
-        <h1>Predicting SPARQL Query Dynamics</h1>
-        
-        <!--
-            MADE WITH <3 AND JAVASCRIPT
-        -->
-        
-        <p>
-            This page contains complementary material, such as, code, data and queries described in the paper <b>Predicting SPARQL Query Dynamics</b>. This material can be useful to repeat the experiments with different settings in order to produce comparable results.
-        </p>
-        
-        
-    </body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Predicting SPARQL Query Dynamics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+<div id="container">
+
+<div id="header">
+<h1>Predicting SPARQL Query Dynamics</h1>
+<p>Anonymous Author(s)</p>
+</div>
+
+<div id="tabs10">
+  <ul>
+    <li><a href="paper/main.pdf" title="Paper"><span>Preprint</span></a></li>
+    <li><a href="#" title="Code"><span>Code</span></a></li>
+  </ul>
+</div>
+
+<div id="container2">
+
+<div id="content">
+<h2>Abstract</h2>
+<p> Given historical versions of an RDF graph, we propose and compare several methods to predict whether or not the results of a SPARQL query will change for the next version. Unsurprisingly, we find that the best results for this task are achievable by considering the full history of results for the query over previous versions of the graph. However, given a previously unseen query, producing historical results requires costly offline maintenance of previous versions of the data, and costly online computation of the query results over these previous versions. This prompts us to explore more lightweight alternatives that rely on features computed from the query and statistical summaries of historical versions of the graph. We evaluate the quality of the predictions produced over weekly snapshots of Wikidata and daily snapshots of DBpedia. Our results provide insights into the trade-offs for predicting SPARQL query dynamics, where we find that a detailed history of changes for a query's results enables much more accurate predictions, but other alternatives we propose have significantly less overhead.
+</p>
+<h2>Predicting OSC Query Dynamics</h2>
+<p>
+<img src="arq.png" alt="Right Center" width="500" class="center" />
+We present the architecture for our proposed system for predicting \osc in Figure~\ref{fig:schema}. The inputs are a query $Q$ and a dynamic RDF graph $\mathcal{G}$. The system then extracts a feature vector $(f_1,\ldots,f_k)$. from these inputs and feeds them into a pre-trained binary classifier to make the \osc prediction. The query features $(f_1,\ldots,f_i)$ are extracted online from the query itself. The predicate and degree features $(f_{i+1},\ldots,f_j)$ are extracted from a statistical description $\desc(\mathcal{G})$ of $\mathcal{G}$, whose details will be described later; in practice, $\desc(\mathcal{G})$ can be computed and maintained offline (independently of the query) in an incremental manner, requiring only the two most recent versions of $\mathcal{G}$ to be updated. Finally, the results features $(f_{j+1},\ldots,f_k)$ require as input the full historical results of $Q$ for each version of $\mathcal{G}$ (which we denote by $Q(\mathcal{G})$); this must be computed online. The binary classifier is pre-trained over a given set of queries $\mathcal{Q}$ for which ground truths are computed over withheld versions.</p>
+<h2>Experimental Data</h2>
+<ul>
+	<li>Wikidata</li>
+	    <ul>
+	        <li><a href="#" title="Code"><span>Initial dump</span></a></li>	
+	        <li><a href="#" title="Code"><span>Changesets</span></a></li>
+	        <li><a href="#" title="Code"><span>Stats</span></a></li>	
+	        <li><a href="#" title="Code"><span>Queries</span></a></li>
+			<ul>
+				<li><a href="#" title="Code"><span>Predicates</span></a></li>	
+				<li><a href="#" title="Code"><span>Features</span></a></li>
+				<li><a href="#" title="Code"><span>Results Changes</span></a></li>
+			</ul>
+        </ul>
+	<li>DBpedia Live</li>
+		<ul>
+	        <li><a href="#" title="Code"><span>Initial dump</span></a></li>	
+	        <li><a href="#" title="Code"><span>Changesets</span></a></li>
+	        <li><a href="#" title="Code"><span>Stats</span></a></li>	
+	        <li><a href="#" title="Code"><span>Queries</span></a></li>
+	        <ul>
+				<li><a href="#" title="Code"><span>Predicates</span></a></li>	
+				<li><a href="#" title="Code"><span>Features</span></a></li>
+				<li><a href="#" title="Code"><span>Results Changes</span></a></li>
+			</ul>
+        </ul>
+</ul>
+</p>
+
+</div>
+
+<div id="sidebar">
+ <p>This page contains complementary material described in the paper <b>Predicting SPARQL Query Dynamics</b>. This material can be useful to repeat the experiments with different settings in order to produce comparable results.
+</p>
+  <h2>Venue</h2>
+  <p>This work will be presented as a full paper  at <i>CIKM 2021 - The 30th ACM International Conference on Information and Knowledge Management.</i></p>
+  <h2>Keywords</h2>
+	<p>Dynamics, Linked Data, SPARQL, RDF.</p>
+</div>
+
+<div id="footer">
+<p>Predicting SPARQL Query Dynamics
+</p>
+</div>
+
+</div>
+
+</div>
+</body>
 </html>
